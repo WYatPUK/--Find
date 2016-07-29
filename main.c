@@ -106,16 +106,16 @@ void Do()
 	x = ReceiveData;
 	nearistp = Find_Nearist(x);
 
-	Send_String("\r\nnear:");
-	SendCharHex((nearistp>>8)&0xff);
-	SendCharHex((nearistp)&0xff);
+//	Send_String("\r\nnear:");
+//	SendCharHex((nearistp>>8)&0xff);
+//	SendCharHex((nearistp)&0xff);
 
 	SendData = SListR[nearistp];
-	Send_String("\r\nF:Num=");
-	SendCharHex((SendData>>(8+6))&0x03);
-	SendCharHex((SendData>>6)&0xff);
-	Send_String("  Index=");
-	SendCharHex(SendData&0x3f);
+//	Send_String("\r\nF:Num=");
+//	SendCharHex((SendData>>(8+6))&0x03);
+//	SendCharHex((SendData>>6)&0xff);
+//	Send_String("  Index=");
+//	SendCharHex(SendData&0x3f);
 	SendOrder = 0x21;
 	Send_String("\r\nReturn ");
 	SendCharHex((SendData>>8)&0xff);
@@ -131,9 +131,6 @@ void DoUSART (unsigned char x)
 			Strlen=0;
 			return;
 		case '&':
-			Send_String("\r\nlength=");
-			SendCharHex(Strlen & 0xff);
-			Send_String("\r\n");
 			if(Strlen==6) Do();
 			Strlen=0;
 			return;

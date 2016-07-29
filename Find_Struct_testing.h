@@ -395,9 +395,6 @@ unsigned int Num;
 unsigned int Index;
 void Recognize_Resistance(unsigned int x)
 {
-	Send_String("\r\nx = ");
-	SendCharHex((x>>8)&0xff);
-	SendCharHex(x&0xff);
 	Num = (x>>6) & 0x03ff;
 	Index = x &	0x003f;
 }
@@ -477,48 +474,34 @@ unsigned int WhichNearer(unsigned int slow, unsigned int shigh)	 //ÒªÇóslowÒ»¶¨±
 	SendCharHex((xia>>8)&0xff);
 	SendCharHex((xia>>0)&0xff);*/
 	//if (shang>xia) return shigh;*/
+	shigh += 0;
 	return slow;	
 }
-int Find_Nearist (unsigned int x)
+int Find_Nearist (unsigned int x)			   
 {
-	unsigned int slow, shigh, saverage, nearier;
+	unsigned int slow, shigh, saverage, nearier;				 
 	char cprl, cprh, cpra;
 	Recognize_Resistance(x);
-	Send_String("\r\nNum is ");
-	SendCharHex((Num>>8)&0xff);
-	SendCharHex(Num&0xff);
-	Send_String("\r\nindex is ");
-	SendCharHex(Index);
 	
 	slow = 0;
 	shigh = Possible_Num - 1;
 	while (1)
 	{
-		Send_String("\r\nLow is:");
-		SendCharHex((slow>>8)&0xff);
-		SendCharHex((slow)&0xff);
-		Send_String("  High is:");
-		SendCharHex((shigh>>8)&0xff);
-		SendCharHex((shigh)&0xff);
 		cprl = Cpr(slow);
 		cprh = Cpr(shigh);
 		if (cprl <= 0) 
 		{
-			Send_String("\r\ncprl<=0");
 			return slow;
 		}
 		if (cprh >= 0) 
 		{
-			Send_String("\r\ncprh>=0");
 			return shigh;
 		}
 		saverage = (slow + shigh) / 2;
 		if (saverage == slow)//ËµÃ÷shighºÍslowÖ»²î1ÁË£¬Ö»ĞèÒª±È½ÏÄÄ¸ö¸ü½Ó½ü¾ÍĞĞÁË
 		{
-			Send_String("\r\narverage=slow");
 			nearier = WhichNearer(slow, shigh);
 			if (nearier!=-1) return nearier;
-			Send_String("\r\nwhich Wrong");
 			return 0;
 		}
 		cpra = Cpr(saverage);
