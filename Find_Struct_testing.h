@@ -415,7 +415,7 @@ char Cpr (int s)
 }
 unsigned int WhichNearer(unsigned int slow, unsigned int shigh)	 //ÒªÇóslowÒ»¶¨±ÈshighÒªĞ¡£¬ÇÒÄ¿±êÒ»¶¨ÔÚËûÃÇÖ®¼ä
 {
-	unsigned int x;
+	/*unsigned int x;
 	unsigned int low_Resistance_Index, high_Resistance_Index;
 	unsigned int low_Resistance_Num, high_Resistance_Num;
 	unsigned int shang_index, shang_num, xia_index, xia_num;
@@ -425,7 +425,7 @@ unsigned int WhichNearer(unsigned int slow, unsigned int shigh)	 //ÒªÇóslowÒ»¶¨±
 	x = SListR[shigh];
 	high_Resistance_Index = x & 0x003f;
 	high_Resistance_Num = (x>>6) & 0x03ff;
-	shang_index=0;
+	shang_index=0;					    
 	shang_num=0;
 	xia_index=0;
 	xia_num=0;
@@ -447,6 +447,7 @@ unsigned int WhichNearer(unsigned int slow, unsigned int shigh)	 //ÒªÇóslowÒ»¶¨±
 			xia_index++;
 		}
 	}
+	//f();
 	//Send_String("\r\nshang");
 //	Send_String("_num");
 	SendCharHex((shang_num>>8)&0xff);
@@ -475,7 +476,7 @@ unsigned int WhichNearer(unsigned int slow, unsigned int shigh)	 //ÒªÇóslowÒ»¶¨±
 	SendCharHex((xia>>16)&0xff);
 	SendCharHex((xia>>8)&0xff);
 	SendCharHex((xia>>0)&0xff);*/
-	//if (shang>xia) return shigh;
+	//if (shang>xia) return shigh;*/
 	return slow;	
 }
 int Find_Nearist (unsigned int x)
