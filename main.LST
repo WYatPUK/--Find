@@ -1,0 +1,182 @@
+C51 COMPILER V9.01   MAIN                                                                  07/22/2016 22:27:23 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE main.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <reg51.h>
+   2          
+   3          char Str[30];
+   4          unsigned int Strlen;
+   5          void UsartConfiguration();
+   6          unsigned int SendData;
+   7          unsigned int ReceiveData;
+   8          unsigned char SendOrder;
+   9          unsigned char ReceiveOrder;
+  10          void SendCharHex(char x)
+  11          {
+  12   1              unsigned char low;
+  13   1              unsigned char high;
+  14   1              low = x&0x0f;
+  15   1              high = (x>>4)&0x0f;
+  16   1              if (low<10) low = '0'+low;
+  17   1              else low = 'A'+low-10;
+  18   1              if (high<10) high = '0'+high;
+  19   1              else high = 'A'+high-10;
+  20   1              SBUF=high;
+  21   1              while(!TI);
+  22   1              TI=0;
+  23   1              SBUF=low;
+  24   1              while(!TI);
+  25   1              TI=0;   
+  26   1      }
+  27          unsigned char CharToHex(char high, char low)
+  28          {
+  29   1              unsigned char x; 
+  30   1              if (high >= '0' && high <= '9')
+  31   1              {
+  32   2                      x = (high - '0')<<4;
+  33   2              }
+  34   1              else if (high >= 'a' && high <= 'f')
+  35   1              {
+  36   2                      x = (high - 'a' + 10)<<4;
+  37   2              }
+  38   1              else if (high >= 'A' && high <= 'F')
+  39   1              {
+  40   2                      x = (high - 'A' + 10)<<4;
+  41   2              }
+  42   1              else return 0;
+  43   1              if (low >= '0' && low <= '9')
+  44   1              {
+  45   2                      x |= (low - '0');
+  46   2              }
+  47   1              else if (low >= 'a' && low <= 'f')
+  48   1              {
+  49   2                      x |= (low - 'a' + 10);
+  50   2              }
+  51   1              else if (low >= 'A' && low <= 'F')
+  52   1              {
+  53   2                      x |= (low - 'A' + 10);
+  54   2              }
+  55   1              else return 0;
+C51 COMPILER V9.01   MAIN                                                                  07/22/2016 22:27:23 PAGE 2   
+
+  56   1              return x;       
+  57   1      }
+  58          void Send_String(char* x)
+  59          {
+  60   1              int i;
+  61   1              for (i=0; x[i]!=0 && i<10; i++)
+  62   1              {
+  63   2                      SBUF=x[i];
+  64   2                      while (!TI);
+  65   2                      TI=0;
+  66   2              }
+  67   1      }
+  68          void main()
+  69          {
+  70   1              UsartConfiguration();
+  71   1              Strlen=0;
+  72   1              while(1);
+  73   1      }
+  74          void UsartConfiguration()
+  75          {
+  76   1              SCON=0X50;                      //设置为工作方式1
+  77   1              TMOD=0X20;                      //设置计数器工作方式2
+  78   1              PCON=0X80;                      //波特率加倍
+  79   1              TH1=0XFA;
+  80   1              //TH1=0XF3;                 //计数器初始值设置，注意波特率是4800的
+  81   1              //TL1=0XF3;
+  82   1              TL1=0XFA;                        //调成了9600波特率
+  83   1              ES=1;                                           //打开接收中断
+  84   1              EA=1;                                           //打开总中断
+  85   1              TR1=1;                                      //打开计数器
+  86   1              ET1=0;
+  87   1      }
+  88          int nearistp;
+  89          unsigned int R;//10位绝对值，6位数量级
+  90          unsigned int order;//8位命令
+  91          unsigned int x;
+  92          #include "Find_Struct_testing.h"
+  93          void Do()
+  94          {
+  95   1              unsigned char D_high, D_low;
+  96   1              D_high = CharToHex(Str[0],Str[1]);
+  97   1              D_low = CharToHex(Str[2],Str[3]);
+  98   1              ReceiveData = D_high<<8 | D_low;
+  99   1              ReceiveOrder = CharToHex(Str[4], Str[5]);
+ 100   1              Send_String("Data is ");
+ 101   1              SendCharHex((ReceiveData>>8)&0xff);
+ 102   1              SendCharHex(ReceiveData&0xff);
+ 103   1              Send_String(" Order is ");
+ 104   1              SendCharHex(ReceiveOrder);
+ 105   1              
+ 106   1              x = ReceiveData;
+ 107   1              nearistp = Find_Nearist(x);
+ 108   1      
+ 109   1              Send_String("\r\nnear:");
+ 110   1              SendCharHex((nearistp>>8)&0xff);
+ 111   1              SendCharHex((nearistp)&0xff);
+ 112   1      
+ 113   1              SendData = SListR[nearistp];
+ 114   1              Send_String("\r\nF:Num=");
+ 115   1              SendCharHex((SendData>>(8+6))&0x03);
+ 116   1              SendCharHex((SendData>>6)&0xff);
+ 117   1              Send_String("  Index=");
+C51 COMPILER V9.01   MAIN                                                                  07/22/2016 22:27:23 PAGE 3   
+
+ 118   1              SendCharHex(SendData&0x3f);
+ 119   1              SendOrder = 0x21;
+ 120   1              Send_String("\r\nReturn ");
+ 121   1              SendCharHex((SendData>>8)&0xff);
+ 122   1              SendCharHex(SendData&0xff);
+ 123   1              Send_String(" Order is ");
+ 124   1              SendCharHex(SendOrder);
+ 125   1      }
+ 126          void DoUSART (unsigned char x)
+ 127          {
+ 128   1              switch(x)
+ 129   1              {
+ 130   2                      case '*':
+ 131   2                              Strlen=0;
+ 132   2                              return;
+ 133   2                      case '&':
+ 134   2                              Send_String("\r\nlength=");
+ 135   2                              SendCharHex(Strlen & 0xff);
+ 136   2                              Send_String("\r\n");
+ 137   2                              if(Strlen==6) Do();
+ 138   2                              Strlen=0;
+ 139   2                              return;
+ 140   2                      default:
+ 141   2                              Str[Strlen] = x;
+ 142   2                              Strlen++;
+ 143   2                              return;
+ 144   2              }
+ 145   1      }
+ 146          void Usart() interrupt 4
+ 147          {
+ 148   1              unsigned char receiveData;
+ 149   1              receiveData=SBUF; //出去接收到的数据
+ 150   1              RI = 0;           //清除接收中断标志位
+ 151   1              DoUSART(receiveData);
+ 152   1              //SBUF=receiveData; //将接收到的数据放入到发送寄存器
+ 153   1              //while(!TI);             //等待发送数据完成
+ 154   1              //TI=0;                   //清除发送完成标志位
+ 155   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1911    ----
+   CONSTANT SIZE    =    169    ----
+   XDATA SIZE       =   1010      34
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
